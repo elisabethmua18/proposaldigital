@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Proposal & Katalog - Elisabeth MUA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Georgia, serif;
+            color: #3d3033;
+            background: #e8dcd2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* WADAH BUKU UTAMA (Bayangan tengah sudah dihapus) */
+        .book-container {
+            width: 100%;
+            max-width: 900px;
+            height: 620px;
+            position: relative;
+            background: #fffdf9;
+            border-radius: 12px;
+            box-shadow: 0 15px 40px rgba(60, 40, 45, 0.25);
+            border: 1px solid #d4c3b3;
+            overflow: hidden;
+        }
+
+        /* HALAMAN BUKU */
+        .book-page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 40px 45px;
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            background: #fffdf9;
+        }
+
+        .book-page.active {
+            display: flex;
+        }
+
+        /* NOMOR HALAMAN */
+        .page-number {
+            position: absolute;
+            bottom: 20px;
+            right: 30px;
+            font-size: 13px;
+            color: #a85d72;
+            font-style: italic;
+        }
+
+        /* TOMBOL NAVIGASI HALAMAN */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .btn-page {
+            background: #b8697f;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 4px 10px rgba(184, 105, 127, 0.3);
+            z-index: 20;
+        }
+
+        .btn-page:hover {
+            background: #944b60;
+            transform: translateY(-2px);
+        }
+
+        .btn-page:disabled {
+            background: #d1c2c5;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* GAYA SCRAPBOOK & KONTEN */
+        .scrap-badge {
+            display: inline-block;
+            background: #faedef;
+            border: 1px dashed #b8697f;
+            color: #8a5362;
+            padding: 5px 14px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        h2 {
+            font-size: 22px;
+            color: #4a363b;
+            margin-bottom: 10px;
+        }
+
+        p, li {
+            font-family: Arial, Helvetica, sans-serif;
+            color: #6c5b60;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        /* POLAROID DIPERBESAR 3X LIPAT (HALAMAN 3) */
+        .polaroid-container-large {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .polaroid-large {
+            background: white;
+            padding: 10px 10px 25px 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border: 1px solid #dfcfcf;
+            transform: rotate(-2deg);
+            width: 280px;
+            text-align: center;
+        }
+
+        .polaroid-large:nth-child(even) {
+            transform: rotate(2deg);
+        }
+
+        .polaroid-large img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .polaroid-large span {
+            display: block;
+            font-size: 12px;
+            color: #8a5362;
+            margin-top: 8px;
+            font-family: cursive;
+        }
+
+        /* POLAROID STANDAR (HALAMAN 4) */
+        .polaroid-container-large-p4 {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .polaroid-large-p4 {
+            background: white;
+            padding: 12px 12px 28px 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border: 1px solid #dfcfcf;
+            transform: rotate(-2deg);
+            width: 210px;
+            text-align: center;
+        }
+
+        .polaroid-large-p4:nth-child(even) {
+            transform: rotate(2deg);
+        }
+
+        .polaroid-large-p4 img {
+            width: 100%;
+            height: 225px;
+            object-fit: cover;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .polaroid-large-p4 span {
+            display: block;
+            font-size: 12px;
+            color: #8a5362;
+            margin-top: 8px;
+            font-family: cursive;
+        }
+
+        /* KOTAK HARGA */
+        .scrap-price-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 6px 0;
+        }
+
+        .scrap-price-card {
+            background: #fffcf8;
+            border: 2px dotted #ead0d4;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .scrap-price-card h4 {
+            color: #4a363b;
+            font-size: 13px;
+            margin-bottom: 2px;
+        }
+
+        .price-tag {
+            font-size: 15px;
+            color: #b8697f;
+            font-weight: bold;
+            margin: 4px 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .wa-btn {
+            display: block;
+            background: #25d366;
+            color: white;
+            text-align: center;
+            padding: 9px;
+            border-radius: 20px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: bold;
+            font-size: 13px;
+            margin-top: 8px;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
+        }
+
+        .wa-btn:hover {
+            background: #1ebe5d;
+        }
+
+        .washi-tape {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 20px;
+            background: rgba(235, 180, 190, 0.5);
+            border-left: 2px dashed #b8697f;
+            border-right: 2px dashed #b8697f;
+        }
+    </style>
+</head>
+<body>
+
+<div class="book-container">
+
+    <!-- ================= HALAMAN 1: SAMPUL ================= -->
+    <div class="book-page active" id="page-1">
+        <div style="text-align: center; margin: auto;">
+            <div class="washi-tape"></div>
+            <span class="scrap-badge">✨ Proposal & Katalog ✨</span>
+            <h2 style="font-size: 28px; margin-top: 10px;">Jasa Makeup Wisuda<br>Elisabeth MUA Semarang</h2>
+            <p style="margin-bottom: 15px; font-size: 14px;">Proposal Pengajuan Kerjasama Makeup & Hairdo/hijabdo Eksklusif untuk Dosen dan Panitia Wisuda.</p>
+            
+            <div style="background: #faedef; display: inline-block; padding: 6px 18px; border-radius: 20px; border: 1px solid #ead0d4;">
+                <strong style="color: #8a5362; font-family: Arial; font-size: 13px;">📅 Tanggal Acara: Rabu, 2 Desember 2026</strong>
+            </div>
+        </div>
+        
+        <div>
+            <div class="page-number">Hal. 1</div>
+            <div class="nav-buttons">
+                <button class="btn-page" disabled>◀ Sebelumnya</button>
+                <button class="btn-page" onclick="changePage(2)">Selanjutnya ▶</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= HALAMAN 2: PROPOSAL ================= -->
+    <div class="book-page" id="page-2">
+        <div>
+            <span class="scrap-badge">Surat Pengantar</span>
+            <h2>Kepada Yth. Ketua Panitia Wisuda Universitas Telogorejo Semarang</h2>
+            <p style="margin-bottom: 8px;">Dengan hormat,</p>
+            <p style="margin-bottom: 8px;">Melalui lembar scrapbook digital ini, kami dari <strong>Elisabeth MUA Semarang</strong> mengajukan penawaran kerjasama makeup hairdo/hijabdo profesional untuk menyukseskan acara wisuda tanggal <strong>2 Desember 2026</strong>.</p>
+            <p style="margin-bottom: 10px;">Kami berkomitmen memberikan hasil riasan yang <em>flawless natural</em>, tahan seharian, serta pengerjaan disiplin waktu, dengan pricelist bersaing.</p>
+            
+            <div style="background: #faf4f5; padding: 10px 15px; border-radius: 8px; border-left: 4px solid #b8697f;">
+                <p style="font-size: 13px;">📍 <strong>Lokasi:</strong> Area Semarang & Sekitarnya (Tersedia layanan <em>Home Service</em> langsung ke lokasi/rumah).</p>
+            </div>
+        </div>
+
+        <div>
+            <div class="page-number">Hal. 2</div>
+            <div class="nav-buttons">
+                <button class="btn-page" onclick="changePage(1)">◀ Sebelumnya</button>
+                <button class="btn-page" onclick="changePage(3)">Selanjutnya ▶</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= HALAMAN 3: PRICE LIST + 2 PORTFOLIO (DIAMBILKAN RUANG & FOTO DIPERBESAR 3X) ================= -->
+    <div class="book-page" id="page-3">
+        <div>
+            <span class="scrap-badge">Katalog Harga & Portofolio</span>
+            <h2>Pilihan Paket Wisuda</h2>
+            
+            <div class="scrap-price-grid">
+                <div class="scrap-price-card">
+                    <h4>Makeup & Hairdo</h4>
+                    <div class="price-tag">Rp250.000</div>
+                    <p style="font-size: 11px;">Styling rambut profesional + makeup tahan lama.</p>
+                </div>
+                <div class="scrap-price-card">
+                    <h4>Makeup & Hijab</h4>
+                    <div class="price-tag">Rp200.000</div>
+                    <p style="font-size: 11px;">Kreasi lilitan hijab modern + makeup elegan.</p>
+                </div>
+            </div>
+
+            <!-- 2 Portofolio di bawah pricelist dengan ukuran diperbesar 3x lipat -->
+            <div class="polaroid-container-large">
+                <div class="polaroid-large">
+                    <img src="portofolio/hairdo.jpeg" alt="Portofolio 1">
+                    <span>Hairdo Reguler</span>
+                </div>
+                <div class="polaroid-large">
+                    <img src="portofolio/hijab.jpeg" alt="Portofolio 2">
+                    <span>Hijab Reguler</span>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="page-number">Hal. 3</div>
+            <div class="nav-buttons">
+                <button class="btn-page" onclick="changePage(2)">◀ Sebelumnya</button>
+                <button class="btn-page" onclick="changePage(4)">Selanjutnya ▶</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= HALAMAN 4: PORTFOLIO LANJUTAN ================= -->
+    <div class="book-page" id="page-4">
+        <div>
+            <span class="scrap-badge">Portofolio & Hasil Karya</span>
+            <h2>Dokumentasi Klien</h2>
+            
+            <div class="polaroid-container-large-p4">
+                <div class="polaroid-large-p4">
+                    <img src="portofolio/wisuda.jpg" alt="MUA Utama 1">
+                    <span>Makeup Wisuda UNNES</span>
+                </div>
+                <div class="polaroid-large-p4">
+                    <img src="portofolio/wisuda2.jpeg" alt="MUA Utama 2">
+                    <span>Makeup Wisuda POLTEKKES</span>
+                </div>
+            </div>
+
+            <a href="https://wa.me/6285713944289?text=Halo%2C%20Kak%20Elisabeth.%20Saya%20Ketua%20Panitia%20Wisuda%202%20Desember%202026%20ingin%20booking%20jadwal." target="_blank" class="wa-btn">
+                💬 Booking Jadwal via WhatsApp
+            </a>
+        </div>
+
+        <div>
+            <div class="page-number">Hal. 4</div>
+            <div class="nav-buttons">
+                <button class="btn-page" onclick="changePage(3)">◀ Sebelumnya</button>
+                <button class="btn-page" disabled>Selanjutnya ▶</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- SCRIPT UNTUK MEMBALIK HALAMAN BUKU -->
+<script>
+    function changePage(pageNumber) {
+        // Sembunyikan semua halaman
+        const pages = document.querySelectorAll('.book-page');
+        pages.forEach(page => page.classList.remove('active'));
+
+        // Tampilkan halaman yang dipilih
+        document.getElementById('page-' + pageNumber).classList.add('active');
+    }
+</script>
+
+</body>
+</html>
